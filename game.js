@@ -1,17 +1,18 @@
 let x = -300; //makes sure pivit point is at the grip
 let y = -300; // ---- || ----
 let characterY = 0;
-let characterX = 0;
+let characterX = 990;
 
 
 //gravity
 const speedV = 3; //3; speed value (used to reset acceleration)
-const recoilV = 20; //20; recoil speed value
+const recoilV = 30; //30; recoil speed value
 let acceleration = 3; //3;
 let speed = speedV; //sets speed value
 let gravity = 0; //gravity starts without force
 let shoot = 0; //upwards movement when shooting
 let shootX = 0; //sideways movement when shooting
+let postX = 0; // old shootX value
 let shootDir = 0; //saves the direction the gun was fired in for x movement
 let recoil = recoilV; //sets recoil speed value
 
@@ -47,10 +48,19 @@ function setup(){
 
   frameRate(24);
 
+  
   //noLoop();
 }
 
 function draw(){
+background(255);
+
+if (characterY > 700) {
+  characterY = -150;
+}
+if (characterX < -990) {
+  characterX = 990;
+}
 
 
   //shooting
@@ -68,17 +78,22 @@ function draw(){
     if (isShooting && shoot >= -30 && shootDecline === false) {
     //recoil movement on both axis
     shoot -= recoil;
-    shootX -= recoil;
+    shootX -= recoil + postX;
     speed = speedV; //reset acceleration
   } else if (isShooting && shoot <=0) { //if recoil has reached max velocity
     shootDecline = true; //stop going up
     //start slowing down recoil's force
-    shoot += 2;
-    shootX += 2;
-  } else if (isShooting && shootX <=0) { //if we're still sliding
+    shoot += 5;
+    shootX += 1;
+  } else if (isShooting && shootX <=0) {
+    shootX += 1; //we should still lose speed when we're falling
+  } else if (isShooting && shootX >=0) { //if we're still sliding
     //we're no longer affected by upwards force
-    isShooting = false;
+    postX = 0;
+    shootX = 0;
     shootDecline = false;
+    console.log('step3');
+    isShooting = false;
   }
 
   //gravity
@@ -90,14 +105,25 @@ function draw(){
   }
 
   gravity = speed; //speed up gun's gravity
-  characterX += Math.sin((shootDir/(180/PI))) * shootX; //shooting force on x axis
-  characterY += Math.cos((rotFire/(180/PI))) * gravity+shoot; //gravity + shooting force on y axis
+  characterX += (Math.sin((shootDir/(180/PI))) * shootX + postX); //shooting force on x axis
+  characterY += Math.cos((rotFire/(180/PI))) * gravity + shoot; //gravity + shooting force on y axis
  
-  gun(-characterX,characterY); //it's the gun!
+  terrain(characterX, 0);
+  console.log('y '+shoot);
+  console.log('x '+shootX);
+  console.log('post '+postX);
+  gun(0,characterY); //it's the gun!
 }
 
+function terrain(x, y) {
+  fill(150, 200, 200);  
+  triangle(x-100, y+700, x+900, y+700, x+500, y+0);
+  triangle(x+900, y+700, x+1900, y+700, x+1500, y+0);
+  triangle(x-1100, y+700, x-100, y+700, x-500, y+0);
+}
+
+
 function gun(X,Y) {
-  background(255,255,255);
 
   push();
   translate(200+X,50+Y);
@@ -197,8 +223,8 @@ function shootF() { //this is the shooting function/animation
     cocking = true;
     }
   } else if (xFireOffset > 0 && cocking === true) { //if slide isn't reset and has been "cocked"
-    xFireOffset -= 10; //move slide back
-    rotTrigger += (30/3); //move trigger back
+    xFireOffset -= 5; //move slide back
+    rotTrigger += 5; //move trigger back
     if (xFireOffset <= 0) { //if slide is reset
     xFireOffset = 0; //compensate for overflow
     rotTrigger = 0; // ---- || ----
@@ -218,6 +244,7 @@ function shootF() { //this is the shooting function/animation
     if (rotFire <= 0) {//if rotation is reset
       baseRot = 0; //set base rotation back to downward
       xFireOffset = 0; //make sure slide doesn't get stuck mid animation
+      cocking = false; //let slide start moving again
       rotTrigger = 0; //make sure trigger ---- || ----
       firing = false; //we're no longer firing
       animTimer = false; //stop animating, we're done
@@ -226,11 +253,14 @@ function shootF() { //this is the shooting function/animation
 
   if (limit === true) { //if limit reached, stop firing
     rotFire -= 5; //draw back from limit
-    xFireOffset -=10; //slide back from limit
-    rotTrigger += (30/3); //reset trigger
+    if (xFireOffset > 0) {
+      xFireOffset -=5; //slide back from limit
+      rotTrigger += 5; //reset trigger
+    }
     if (rotFire <= 0) { //if drawn back
       baseRot = 0; //set base rotation back to downward
       xFireOffset = 0; //make sure slide doesn't get stuck mid animation
+      cocking = false; //let slide start moving again
       rotTrigger = 0; //make sure trigger ---- || ----
       firing = false; //we're no longer firing
       animTimer = false; //stop animating, we're done
@@ -238,7 +268,6 @@ function shootF() { //this is the shooting function/animation
     }
   }
 }
-
 
 function keyPressed() {
 /*if (isLooping()) {
@@ -257,6 +286,7 @@ function keyPressed() {
 
 
   if (key === ' ') { //if space is pressed
+    postX = shootX; //keep momentum on new shot
     isShooting = true; //start moving upwards
     shootDecline = false; //reset downwards movement if mid-fire
     shootDir = rotFire; //check angle of gun
