@@ -1,6 +1,6 @@
 let x = -300; //makes sure pivit point is at the grip
 let y = -300; // ---- || ----
-let characterY = 0;
+let characterY = 350;
 let characterX = 990;
 
 
@@ -39,21 +39,128 @@ let yFireOffset = 0; //amount slide will fall apart and noclip (unused)
 let rotFire = 0; //rotation of gun recoil
 let rotTrigger = -0; //rotation of trigger
 
+//states
+//game state
+let gameState = "game";
+
+//button states
+let normal = '#96c8c8';
+let hover = '#649696';
+let buttonState = normal;
 
 
 function setup(){
   createCanvas(700, 700);
-
   angleMode(DEGREES);
 
-  frameRate(24);
-
-  
-  //noLoop();
+  frameRate(24); //otherwise my animations de-sync
+  noStroke();
 }
 
 function draw(){
-background(255);
+  if (gameState === "start") {
+    startScreen();
+  } else if (gameState === "game") {
+    gameScreen();
+  }
+}
+
+
+
+//game states
+//start screen
+function startScreen() {
+  background(50, 100, 100);
+  //title
+  fill(150, 200, 200);
+  textStyle(BOLD);
+  textAlign(CENTER, CENTER);
+  textSize(50);
+  text('Glock into the Sky', width/2-12, height/2-100);
+  //button
+  button('START', buttonState, width/2, height/2, 30);
+
+  //vingette
+  push();
+  noFill();
+  stroke(0, 0, 0, 3);
+  strokeWeight(20);
+  ellipse(width/2-12, height/2-12, width+500, height+270);
+  strokeWeight(30);
+  ellipse(width/2-12, height/2-12, width+500, height+270);
+  strokeWeight(40);
+  ellipse(width/2-12, height/2-12, width+500, height+270);
+  strokeWeight(50);
+  ellipse(width/2-12, height/2-12, width+500, height+270);
+  strokeWeight(60);
+  ellipse(width/2-12, height/2-12, width+500, height+270);
+  strokeWeight(70);
+  ellipse(width/2-12, height/2-12, width+500, height+270);
+  strokeWeight(80);
+  ellipse(width/2-12, height/2-12, width+500, height+270);
+  strokeWeight(90);
+  ellipse(width/2-12, height/2-12, width+500, height+270);
+  strokeWeight(100);
+  ellipse(width/2-12, height/2-12, width+500, height+270);
+  strokeWeight(110);
+  ellipse(width/2-12, height/2-12, width+500, height+270);
+  strokeWeight(120);
+  ellipse(width/2-12, height/2-12, width+500, height+270);
+  strokeWeight(130);
+  ellipse(width/2-12, height/2-12, width+500, height+270);
+  strokeWeight(140);
+  ellipse(width/2-12, height/2-12, width+500, height+270);
+  strokeWeight(150);
+  ellipse(width/2-12, height/2-12, width+500, height+270);
+  strokeWeight(160);
+  ellipse(width/2-12, height/2-12, width+500, height+270);
+  strokeWeight(170);
+  ellipse(width/2-12, height/2-12, width+500, height+270);
+  strokeWeight(180);
+  ellipse(width/2-12, height/2-12, width+500, height+270);
+  strokeWeight(190);
+  ellipse(width/2-12, height/2-12, width+500, height+270);
+  strokeWeight(115);
+  ellipse(width/2-12, height/2-12, width+500, height+270);
+  strokeWeight(200);
+  ellipse(width/2-12, height/2-12, width+500, height+270);
+  strokeWeight(210);
+  ellipse(width/2-12, height/2-12, width+500, height+270);
+  strokeWeight(220);
+  ellipse(width/2-12, height/2-12, width+500, height+270);
+  strokeWeight(230);
+  ellipse(width/2-12, height/2-12, width+500, height+270);
+  strokeWeight(240);
+  ellipse(width/2-12, height/2-12, width+500, height+270);
+  strokeWeight(250);
+  ellipse(width/2-12, height/2-12, width+500, height+270);
+  strokeWeight(260);
+  ellipse(width/2-12, height/2-12, width+500, height+270);
+  strokeWeight(270);
+  ellipse(width/2-12, height/2-12, width+500, height+270);
+  strokeWeight(280);
+  ellipse(width/2-12, height/2-12, width+500, height+270);
+  strokeWeight(290);
+  ellipse(width/2-12, height/2-12, width+500, height+270);
+  strokeWeight(300);
+  ellipse(width/2-12, height/2-12, width+500, height+270);
+  strokeWeight(310);
+  ellipse(width/2-12, height/2-12, width+500, height+270);
+  strokeWeight(320);
+  ellipse(width/2-12, height/2-12, width+500, height+270);
+  strokeWeight(330);
+  ellipse(width/2-12, height/2-12, width+500, height+270);
+  strokeWeight(340);
+  ellipse(width/2-12, height/2-12, width+500, height+270);
+  strokeWeight(350);
+  ellipse(width/2-12, height/2-12, width+500, height+270);
+  strokeWeight(360);
+  ellipse(width/2-12, height/2-12, width+500, height+270);
+  pop();
+}
+//the actual game
+function gameScreen() {
+  background(100, 150, 150);
 
 if (characterY > 700) {
   characterY = -150;
@@ -92,7 +199,6 @@ if (characterX < -990) {
     postX = 0;
     shootX = 0;
     shootDecline = false;
-    console.log('step3');
     isShooting = false;
   }
 
@@ -103,33 +209,57 @@ if (characterX < -990) {
     //terminal velocity
     speed = 50;
   }
+  console.log(shootX+postX);
 
   gravity = speed; //speed up gun's gravity
   characterX += (Math.sin((shootDir/(180/PI))) * shootX + postX); //shooting force on x axis
   characterY += Math.cos((rotFire/(180/PI))) * gravity + shoot; //gravity + shooting force on y axis
  
-  terrain(characterX, 0);
-  console.log('y '+shoot);
-  console.log('x '+shootX);
-  console.log('post '+postX);
+  terrain(characterX/2, 200, characterX, 50); //it's the background!
+
   gun(0,characterY); //it's the gun!
 }
+//
 
-function terrain(x, y) {
+function button(inputText, c, w, h, t) {
+  //hover animation
+  if (mouseX > (-112+w) && mouseY > (-40+h) &&
+  mouseX < (-112+w+200) && mouseY < (-40+h+80)) {
+    buttonState = hover;
+  } else {
+    buttonState = normal;
+  }
+  push();
+  translate(w, h);
+  fill(c);
+  rect(-112, -40, 200, 80, 10);
+  fill(255);
+  textStyle(NORMAL);
+  textAlign(CENTER, CENTER);
+  textSize(t);
+  text(inputText, -12, 0);
+  pop();
+}
+
+function terrain(a, b, x, y) {
+  //back shapes
+  fill(125, 175, 175);  
+  triangle(a-100, b+700, a+900, b+700, a+500, b+0);
+  triangle(a+900, b+700, a+1900, b+700, a+1500, b+0);
+  triangle(a-1100, b+700, a-100, b+700, a-500, b+0);
+  //front shapes
   fill(150, 200, 200);  
   triangle(x-100, y+700, x+900, y+700, x+500, y+0);
   triangle(x+900, y+700, x+1900, y+700, x+1500, y+0);
   triangle(x-1100, y+700, x-100, y+700, x-500, y+0);
 }
 
-
 function gun(X,Y) {
 
   push();
-  translate(200+X,50+Y);
+  translate(350+X,50+Y);
   rotate(rotFire-90);
   scale(0.333);
-  noStroke();
 
   //muzzle
   fill(50,50,50);
@@ -286,6 +416,7 @@ function keyPressed() {
 
 
   if (key === ' ') { //if space is pressed
+    loop();
     postX = shootX; //keep momentum on new shot
     isShooting = true; //start moving upwards
     shootDecline = false; //reset downwards movement if mid-fire
@@ -301,5 +432,12 @@ function keyPressed() {
     } else { //if gun animation isnt playing then play it
       animTimer = true;
     }
+  }
+}
+
+function mouseClicked() {
+  console.log('hej');
+  if (buttonState === hover && gameState === "start") {
+    gameState = "game";
   }
 }
