@@ -1,18 +1,43 @@
 let x = -300; //makes sure pivit point is at the grip
-let y = -300; //---- || ----
+let y = -300; // ---- || ----
+let characterY = 0;
+let characterX = 0;
 
+
+//gravity
+const speedV = 3; //3; speed value (used to reset acceleration)
+const recoilV = 20; //20; recoil speed value
+let acceleration = 3; //3;
+let speed = speedV; //sets speed value
+let gravity = 0; //gravity starts without force
+let shoot = 0; //upwards movement when shooting
+let shootX = 0; //sideways movement when shooting
+let shootDir = 0; //saves the direction the gun was fired in for x movement
+let recoil = recoilV; //sets recoil speed value
+
+//makes gun move correctly
+isShooting = false; //toggles recoil physics
+shootDecline = false; //disables up movement when true
+
+//makes gun run
+let animTimer = false; //makes sure shooting animation only plays once
+let midFire = false; //makes sure you can re-enable animation by shooting mid-fire
+
+//limit firing angle
 let limit = false; //makes sure recoil doesnt go too far
-const limitValue = 25; //max angle offset
+const limitValue = 50; //max angle offset
 
+//sync animations and limit controls
 let firing = false; //state in which you can fire
 let baseRot = 0; //updates mid-fire for new recoil
-
 let cocking = false; //state in which the slide will cock back
 
+//animaton values
 let xFireOffset = 0; //amount slide cock back
 let yFireOffset = 0; //amount slide will fall apart and noclip (unused)
 let rotFire = 0; //rotation of gun recoil
 let rotTrigger = -0; //rotation of trigger
+
 
 
 function setup(){
@@ -22,72 +47,62 @@ function setup(){
 
   frameRate(24);
 
-  noLoop();
+  //noLoop();
 }
 
 function draw(){
-  let fireAngle = baseRot + 10; //resets recoil to 10 degree range
 
-  //cocking
-  if (xFireOffset < 30 && cocking === false && firing === false) {
-    xFireOffset += 30;
-    rotTrigger -= 30;
-    if (xFireOffset >= 30) {
-      cocking = true;
-    }
+
+  //shooting
+  if (animTimer) {
+      shootF();
   }
-  else if (xFireOffset > 0 && cocking === true) {
-    xFireOffset -= 10;
-    rotTrigger += (30/3);
-    if (xFireOffset <= 0) {
-      xFireOffset = 0;
-      rotTrigger = 0;
-      cocking = false;
-    }
+  //shooting while animation is playing
+  if (midFire) {
+      shootF();
+      midFire = false;
   }
 
-  //rotation
-  if (rotFire < fireAngle && firing === false && limit === false) {
-    rotFire += 20;
-    if (rotFire >= fireAngle) {
-      firing = true;
-    }
-  }
-  else if (rotFire > 0 && firing === true) {
-    rotFire -= 5;
-    if (rotFire <= 0) {
-      baseRot = 0;
-      xFireOffset = 0;
-      rotTrigger = 0;
-      firing = false;
-      limit = false;
-      noLoop();
-    }
-  }
-  if (limit === true) { //if limit reached, stop firing
-    rotFire -= 5;
-    xFireOffset -=10;
-    rotTrigger += (30/3);
-    if (rotFire <= 0) {
-      baseRot = 0;
-      xFireOffset = 0;
-      rotTrigger = 0;
-      firing = false;
-      limit = false;
-      noLoop();
-    }
+    //recoil
+    //if we have started shooting, and recoil havent reached max velocity, and we aren't falling
+    if (isShooting && shoot >= -30 && shootDecline === false) {
+    //recoil movement on both axis
+    shoot -= recoil;
+    shootX -= recoil;
+    speed = speedV; //reset acceleration
+  } else if (isShooting && shoot <=0) { //if recoil has reached max velocity
+    shootDecline = true; //stop going up
+    //start slowing down recoil's force
+    shoot += 2;
+    shootX += 2;
+  } else if (isShooting && shootX <=0) { //if we're still sliding
+    //we're no longer affected by upwards force
+    isShooting = false;
+    shootDecline = false;
   }
 
-  gun();
+  //gravity
+  if (speed <= 50) {
+    speed += acceleration;
+  } else {
+    //terminal velocity
+    speed = 50;
+  }
+
+  gravity = speed; //speed up gun's gravity
+  characterX += Math.sin((shootDir/(180/PI))) * shootX; //shooting force on x axis
+  characterY += Math.cos((rotFire/(180/PI))) * gravity+shoot; //gravity + shooting force on y axis
+ 
+  gun(-characterX,characterY); //it's the gun!
 }
 
-function gun() {
+function gun(X,Y) {
   background(255,255,255);
 
   push();
-  translate(420,400);
-  rotate(rotFire);
-  scale(1);
+  translate(200+X,50+Y);
+  rotate(rotFire-90);
+  scale(0.333);
   noStroke();
 
   //muzzle
@@ -169,8 +184,64 @@ function gun() {
 
 }
 
-function mousePressed() {
-  if (isLooping()) {
+function shootF() { //this is the shooting function/animation
+
+  let fireAngle = baseRot + 40; //resets recoil to 40 degree range
+  
+  //slide and trigger animation
+  //make the slide cock back, if it ain't already doing that, or the gun isn't firing
+  if (xFireOffset < 30 && cocking === false && firing === false) {
+    xFireOffset += 30; //cock back
+    rotTrigger -= 30; //pull trigger
+    if (xFireOffset >= 30) { //if slide is all the way back then its "cocked"
+    cocking = true;
+    }
+  } else if (xFireOffset > 0 && cocking === true) { //if slide isn't reset and has been "cocked"
+    xFireOffset -= 10; //move slide back
+    rotTrigger += (30/3); //move trigger back
+    if (xFireOffset <= 0) { //if slide is reset
+    xFireOffset = 0; //compensate for overflow
+    rotTrigger = 0; // ---- || ----
+    cocking = false; //its no longer in cocking mode
+    }
+  }
+
+  //rotation animation
+  //if rotation is less than max recoil, and its not already firing, and the recoil limit isnt reached
+  if (rotFire < fireAngle && firing === false && limit === false) {
+    rotFire += 40; //start rotating
+    if (rotFire >= fireAngle) { //if recoil angle met
+    firing = true; //we have fired
+    }
+  } else if (rotFire > 0 && firing === true) { //if rotation isn't reset and we just fired
+    rotFire -= 5; //start drawing back
+    if (rotFire <= 0) {//if rotation is reset
+      baseRot = 0; //set base rotation back to downward
+      xFireOffset = 0; //make sure slide doesn't get stuck mid animation
+      rotTrigger = 0; //make sure trigger ---- || ----
+      firing = false; //we're no longer firing
+      animTimer = false; //stop animating, we're done
+    }
+  }
+
+  if (limit === true) { //if limit reached, stop firing
+    rotFire -= 5; //draw back from limit
+    xFireOffset -=10; //slide back from limit
+    rotTrigger += (30/3); //reset trigger
+    if (rotFire <= 0) { //if drawn back
+      baseRot = 0; //set base rotation back to downward
+      xFireOffset = 0; //make sure slide doesn't get stuck mid animation
+      rotTrigger = 0; //make sure trigger ---- || ----
+      firing = false; //we're no longer firing
+      animTimer = false; //stop animating, we're done
+      limit = false; //limit has done its thing
+    }
+  }
+}
+
+
+function keyPressed() {
+/*if (isLooping()) {
     baseRot = rotFire; //before animation execute, set recoil from current gun angle
     if (rotFire >= limitValue) { //if limit reached, stop firing
       limit = true;
@@ -182,5 +253,23 @@ function mousePressed() {
   }
   else {
     loop(); //activate on press
+  }*/
+
+
+  if (key === ' ') { //if space is pressed
+    isShooting = true; //start moving upwards
+    shootDecline = false; //reset downwards movement if mid-fire
+    shootDir = rotFire; //check angle of gun
+    if (animTimer) { //if gun animation is already playing
+      firing = false; //reset firing check
+      shootDir = rotFire; //gather new firing angle
+      baseRot = rotFire; //before animation execute, set recoil from current gun angle
+      midFire = true; //yep, we did indeed fire mid-fire
+      if (rotFire >= limitValue) { //if limit reached, stop firing
+        limit = true; //execute emergency draw back
+      }
+    } else { //if gun animation isnt playing then play it
+      animTimer = true;
+    }
   }
 }
