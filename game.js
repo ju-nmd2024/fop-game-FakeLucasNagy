@@ -41,7 +41,7 @@ let rotTrigger = -0; //rotation of trigger
 
 //states
 //game state
-let gameState = "game";
+let gameState = "start";
 
 //button states
 let normal = '#96c8c8';
@@ -62,6 +62,10 @@ function draw(){
     startScreen();
   } else if (gameState === "game") {
     gameScreen();
+  } else if (gameState === "win") {
+    winScreen();
+  } else {
+    failScreen();
   }
 }
 
@@ -70,6 +74,15 @@ function draw(){
 //game states
 //start screen
 function startScreen() {
+  characterY = 350;
+  characterX = 990;
+  speed = speedV;
+  shoot = 0;
+  shootX = 0;
+  postX = 0;
+  shootDecline = false;
+  isShooting = false;
+
   background(50, 100, 100);
   //title
   fill(150, 200, 200);
@@ -162,13 +175,25 @@ function startScreen() {
 function gameScreen() {
   background(100, 150, 150);
 
-if (characterY > 700) {
-  characterY = -150;
-}
-if (characterX < -990) {
-  characterX = 990;
-}
-
+  //win requirement (speed of at least 70 units)
+  if (characterX <= -6470 && characterX >= -6550 && characterY >= 20 && 
+    characterY <= 290 && characterY >= 30 && (Math.sin((shootDir/(180/PI))) * shootX + postX) < -70) {
+    gameState = "win";
+  } else if (characterX <= -6470 && characterX >= -6550 && characterY >= 20 && 
+    characterY <= 290 && characterY >= 30) {
+      gameState = "Too Slow!";
+  }
+  console.log((Math.sin((shootDir/(180/PI))) * shootX + postX));
+  //death & scroll looping
+  if (characterY > 750) {
+    gameState = "You fell down!";
+  }
+  if (characterY < -170) {
+    gameState = "That's too far up!";
+  }
+  if (characterX < -6930) {
+    characterX = 990;
+  }  
 
   //shooting
   if (animTimer) {
@@ -179,7 +204,6 @@ if (characterX < -990) {
       shootF();
       midFire = false;
   }
-
     //recoil
     //if we have started shooting, and recoil havent reached max velocity, and we aren't falling
     if (isShooting && shoot >= -30 && shootDecline === false) {
@@ -209,7 +233,6 @@ if (characterX < -990) {
     //terminal velocity
     speed = 50;
   }
-  console.log(shootX+postX);
 
   gravity = speed; //speed up gun's gravity
   characterX += (Math.sin((shootDir/(180/PI))) * shootX + postX); //shooting force on x axis
@@ -219,12 +242,196 @@ if (characterX < -990) {
 
   gun(0,characterY); //it's the gun!
 }
-//
+//fail screen
+function failScreen() {
+
+  background(30, 70, 70);
+  //title
+  fill(100, 150, 150);
+  textStyle(BOLD);
+  textAlign(CENTER, CENTER);
+  textSize(50);
+  text(gameState, width/2-12, height/2-100);
+  //button
+  button('RESTART', buttonState, width/2, height/2, 30);
+
+  //vingette
+  push();
+  noFill();
+  stroke(0, 0, 0, 3);
+  strokeWeight(20);
+  ellipse(width/2-12, height/2-12, width+500, height+270);
+  strokeWeight(30);
+  ellipse(width/2-12, height/2-12, width+500, height+270);
+  strokeWeight(40);
+  ellipse(width/2-12, height/2-12, width+500, height+270);
+  strokeWeight(50);
+  ellipse(width/2-12, height/2-12, width+500, height+270);
+  strokeWeight(60);
+  ellipse(width/2-12, height/2-12, width+500, height+270);
+  strokeWeight(70);
+  ellipse(width/2-12, height/2-12, width+500, height+270);
+  strokeWeight(80);
+  ellipse(width/2-12, height/2-12, width+500, height+270);
+  strokeWeight(90);
+  ellipse(width/2-12, height/2-12, width+500, height+270);
+  strokeWeight(100);
+  ellipse(width/2-12, height/2-12, width+500, height+270);
+  strokeWeight(110);
+  ellipse(width/2-12, height/2-12, width+500, height+270);
+  strokeWeight(120);
+  ellipse(width/2-12, height/2-12, width+500, height+270);
+  strokeWeight(130);
+  ellipse(width/2-12, height/2-12, width+500, height+270);
+  strokeWeight(140);
+  ellipse(width/2-12, height/2-12, width+500, height+270);
+  strokeWeight(150);
+  ellipse(width/2-12, height/2-12, width+500, height+270);
+  strokeWeight(160);
+  ellipse(width/2-12, height/2-12, width+500, height+270);
+  strokeWeight(170);
+  ellipse(width/2-12, height/2-12, width+500, height+270);
+  strokeWeight(180);
+  ellipse(width/2-12, height/2-12, width+500, height+270);
+  strokeWeight(190);
+  ellipse(width/2-12, height/2-12, width+500, height+270);
+  strokeWeight(115);
+  ellipse(width/2-12, height/2-12, width+500, height+270);
+  strokeWeight(200);
+  ellipse(width/2-12, height/2-12, width+500, height+270);
+  strokeWeight(210);
+  ellipse(width/2-12, height/2-12, width+500, height+270);
+  strokeWeight(220);
+  ellipse(width/2-12, height/2-12, width+500, height+270);
+  strokeWeight(230);
+  ellipse(width/2-12, height/2-12, width+500, height+270);
+  strokeWeight(240);
+  ellipse(width/2-12, height/2-12, width+500, height+270);
+  strokeWeight(250);
+  ellipse(width/2-12, height/2-12, width+500, height+270);
+  strokeWeight(260);
+  ellipse(width/2-12, height/2-12, width+500, height+270);
+  strokeWeight(270);
+  ellipse(width/2-12, height/2-12, width+500, height+270);
+  strokeWeight(280);
+  ellipse(width/2-12, height/2-12, width+500, height+270);
+  strokeWeight(290);
+  ellipse(width/2-12, height/2-12, width+500, height+270);
+  strokeWeight(300);
+  ellipse(width/2-12, height/2-12, width+500, height+270);
+  strokeWeight(310);
+  ellipse(width/2-12, height/2-12, width+500, height+270);
+  strokeWeight(320);
+  ellipse(width/2-12, height/2-12, width+500, height+270);
+  strokeWeight(330);
+  ellipse(width/2-12, height/2-12, width+500, height+270);
+  strokeWeight(340);
+  ellipse(width/2-12, height/2-12, width+500, height+270);
+  strokeWeight(350);
+  ellipse(width/2-12, height/2-12, width+500, height+270);
+  strokeWeight(360);
+  ellipse(width/2-12, height/2-12, width+500, height+270);
+  pop();
+}
+//win screen
+function winScreen() {
+  characterY = 350;
+  characterX = 990;
+
+  background(200, 250, 250);
+  //title
+  fill(100, 150, 150);
+  textStyle(BOLD);
+  textAlign(CENTER, CENTER);
+  textSize(50);
+  text("You Did It!", width/2-12, height/2-100);
+  //button
+  button('MAIN MENU', buttonState, width/2, height/2, 30);
+
+  //vingette
+  push();
+  noFill();
+  stroke(255, 255, 255, 8);
+  strokeWeight(20);
+  ellipse(width/2-12, height/2-12, width+500, height+270);
+  strokeWeight(30);
+  ellipse(width/2-12, height/2-12, width+500, height+270);
+  strokeWeight(40);
+  ellipse(width/2-12, height/2-12, width+500, height+270);
+  strokeWeight(50);
+  ellipse(width/2-12, height/2-12, width+500, height+270);
+  strokeWeight(60);
+  ellipse(width/2-12, height/2-12, width+500, height+270);
+  strokeWeight(70);
+  ellipse(width/2-12, height/2-12, width+500, height+270);
+  strokeWeight(80);
+  ellipse(width/2-12, height/2-12, width+500, height+270);
+  strokeWeight(90);
+  ellipse(width/2-12, height/2-12, width+500, height+270);
+  strokeWeight(100);
+  ellipse(width/2-12, height/2-12, width+500, height+270);
+  strokeWeight(110);
+  ellipse(width/2-12, height/2-12, width+500, height+270);
+  strokeWeight(120);
+  ellipse(width/2-12, height/2-12, width+500, height+270);
+  strokeWeight(130);
+  ellipse(width/2-12, height/2-12, width+500, height+270);
+  strokeWeight(140);
+  ellipse(width/2-12, height/2-12, width+500, height+270);
+  strokeWeight(150);
+  ellipse(width/2-12, height/2-12, width+500, height+270);
+  strokeWeight(160);
+  ellipse(width/2-12, height/2-12, width+500, height+270);
+  strokeWeight(170);
+  ellipse(width/2-12, height/2-12, width+500, height+270);
+  strokeWeight(180);
+  ellipse(width/2-12, height/2-12, width+500, height+270);
+  strokeWeight(190);
+  ellipse(width/2-12, height/2-12, width+500, height+270);
+  strokeWeight(115);
+  ellipse(width/2-12, height/2-12, width+500, height+270);
+  strokeWeight(200);
+  ellipse(width/2-12, height/2-12, width+500, height+270);
+  strokeWeight(210);
+  ellipse(width/2-12, height/2-12, width+500, height+270);
+  strokeWeight(220);
+  ellipse(width/2-12, height/2-12, width+500, height+270);
+  strokeWeight(230);
+  ellipse(width/2-12, height/2-12, width+500, height+270);
+  strokeWeight(240);
+  ellipse(width/2-12, height/2-12, width+500, height+270);
+  strokeWeight(250);
+  ellipse(width/2-12, height/2-12, width+500, height+270);
+  strokeWeight(260);
+  ellipse(width/2-12, height/2-12, width+500, height+270);
+  strokeWeight(270);
+  ellipse(width/2-12, height/2-12, width+500, height+270);
+  strokeWeight(280);
+  ellipse(width/2-12, height/2-12, width+500, height+270);
+  strokeWeight(290);
+  ellipse(width/2-12, height/2-12, width+500, height+270);
+  strokeWeight(300);
+  ellipse(width/2-12, height/2-12, width+500, height+270);
+  strokeWeight(310);
+  ellipse(width/2-12, height/2-12, width+500, height+270);
+  strokeWeight(320);
+  ellipse(width/2-12, height/2-12, width+500, height+270);
+  strokeWeight(330);
+  ellipse(width/2-12, height/2-12, width+500, height+270);
+  strokeWeight(340);
+  ellipse(width/2-12, height/2-12, width+500, height+270);
+  strokeWeight(350);
+  ellipse(width/2-12, height/2-12, width+500, height+270);
+  strokeWeight(360);
+  ellipse(width/2-12, height/2-12, width+500, height+270);
+  pop();
+}
 
 function button(inputText, c, w, h, t) {
   //hover animation
   if (mouseX > (-112+w) && mouseY > (-40+h) &&
-  mouseX < (-112+w+200) && mouseY < (-40+h+80)) {
+  mouseX < (-112+w+200) && mouseY < (-40+h+80) &&
+  gameState !== "game") {
     buttonState = hover;
   } else {
     buttonState = normal;
@@ -247,11 +454,34 @@ function terrain(a, b, x, y) {
   triangle(a-100, b+700, a+900, b+700, a+500, b+0);
   triangle(a+900, b+700, a+1900, b+700, a+1500, b+0);
   triangle(a-1100, b+700, a-100, b+700, a-500, b+0);
+  triangle(a+1900, b+700, a+2900, b+700, a+2500, b+0);
+  triangle(a+2900, b+700, a+3900, b+700, a+3500, b+0);
+  triangle(a+3900, b+700, a+4900, b+700, a+4500, b+0);
+  
   //front shapes
   fill(150, 200, 200);  
   triangle(x-100, y+700, x+900, y+700, x+500, y+0);
   triangle(x+900, y+700, x+1900, y+700, x+1500, y+0);
   triangle(x-1100, y+700, x-100, y+700, x-500, y+0);
+  triangle(x+1900, y+700, x+2900, y+700, x+2500, y+0);
+  triangle(x+2900, y+700, x+3900, y+700, x+3500, y+0);
+  triangle(x+3900, y+700, x+4900, y+700, x+4500, y+0);
+  triangle(x+4900, y+700, x+5900, y+700, x+5500, y+0);
+  triangle(x+5900, y+700, x+6900, y+700, x+6500, y+0);
+  triangle(x+6900, y+700, x+7900, y+700, x+7500, y+0);
+
+  //finish
+  push();
+  translate(7400, 0);
+  fill(255,0,0);
+  strokeWeight(10);
+  stroke(255);
+  ellipse(x-500, y+200, 90, 200);
+  ellipse(x-500, y+200, 60, 160);
+  ellipse(x-500, y+200, 30, 120);
+  strokeWeight(4);
+  ellipse(x-500, y+200, 4, 70);
+  pop();
 }
 
 function gun(X,Y) {
@@ -435,9 +665,11 @@ function keyPressed() {
   }
 }
 
+//switch states when clicking on button
 function mouseClicked() {
-  console.log('hej');
-  if (buttonState === hover && gameState === "start") {
+  if (buttonState === hover && gameState !== "start" && gameState !== "game") {
+    gameState = "start";
+  } else if (buttonState === hover && gameState === "start") {
     gameState = "game";
   }
 }
