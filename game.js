@@ -183,7 +183,6 @@ function gameScreen() {
     characterY <= 290 && characterY >= 30) {
       gameState = "Too Slow!";
   }
-  console.log((Math.sin((shootDir/(180/PI))) * shootX + postX));
   //death & scroll looping
   if (characterY > 750) {
     gameState = "You fell down!";
