@@ -50,6 +50,7 @@ let buttonState = normal;
 
 
 function setup(){
+  //let s = Math.min(innerWidth, innerHeight);
   createCanvas(700, 700);
   angleMode(DEGREES);
 
@@ -58,6 +59,8 @@ function setup(){
 }
 
 function draw(){
+  document.getElementById("defaultCanvas0").style.width = "";
+  document.getElementById("defaultCanvas0").style.height = "";
   if (gameState === "start") {
     startScreen();
   } else if (gameState === "game") {
