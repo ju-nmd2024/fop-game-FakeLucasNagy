@@ -1,6 +1,6 @@
 let x = -300; //makes sure pivit point is at the grip
 let y = -300; // ---- || ----
-let characterY = 350;
+let characterY = 50;
 let characterX = 990;
 
 
@@ -74,7 +74,7 @@ function draw(){
 //game states
 //start screen
 function startScreen() {
-  characterY = 350;
+  characterY = 50;
   characterX = 990;
   speed = speedV;
   shoot = 0;
@@ -646,7 +646,6 @@ function keyPressed() {
 
 
   if (key === ' ') { //if space is pressed
-    loop();
     postX = shootX; //keep momentum on new shot
     isShooting = true; //start moving upwards
     shootDecline = false; //reset downwards movement if mid-fire
