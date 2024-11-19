@@ -26,7 +26,7 @@ let midFire = false; //makes sure you can re-enable animation by shooting mid-fi
 
 //limit firing angle
 let limit = false; //makes sure recoil doesnt go too far
-const limitValue = 50; //max angle offset
+const limitValue = 50; //50; max angle offset
 
 //sync animations and limit controls
 let firing = false; //state in which you can fire
@@ -632,21 +632,6 @@ function shootF() { //this is the shooting function/animation
 }
 
 function keyPressed() {
-/*if (isLooping()) {
-    baseRot = rotFire; //before animation execute, set recoil from current gun angle
-    if (rotFire >= limitValue) { //if limit reached, stop firing
-      limit = true;
-    }
-    else { //if limit not reached, allow fire mid-recoil
-      firing = false;
-      cocking = false;
-    }
-  }
-  else {
-    loop(); //activate on press
-  }*/
-
-
   if (key === ' ') { //if space is pressed
     postX = shootX; //keep momentum on new shot
     isShooting = true; //start moving upwards
