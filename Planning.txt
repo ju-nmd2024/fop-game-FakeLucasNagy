@@ -1,0 +1,8 @@
+Gun Game that uses recoil to keep gun in sky.
+
+1. Create Gun shape with seperate parts so they can move seperately.
+2. Create function that moves parts in an animation on mouseclick, and back to start point:
+  "if mouseclick move (part) (amount) then back to 0" or something
+3. Add gravity, and modify gravity if shooting.
+4. Movement on X axis should be manipulated based on the angle of the gun when gun is shot.
+5. To win the game you have to slam into a target with all the momentum you can gain. If you are too slow, or go out of bounds you fail.
